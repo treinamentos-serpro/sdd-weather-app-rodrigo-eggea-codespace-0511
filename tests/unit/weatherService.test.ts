@@ -271,6 +271,26 @@ describe('getWeather', () => {
     });
   });
 
+  it('lança WeatherServiceError quando a API de forecast retorna HTTP não-ok', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 503 })));
+
+    await expect(getWeather(sampleCity)).rejects.toMatchObject({
+      name: 'WeatherServiceError',
+      code: 'http',
+      userMessage: 'Não foi possível carregar o clima. Tente novamente.',
+    });
+  });
+
+  it('lança WeatherServiceError quando a chamada de forecast falha na rede', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Network error')));
+
+    await expect(getWeather(sampleCity)).rejects.toMatchObject({
+      name: 'WeatherServiceError',
+      code: 'network',
+      userMessage: 'Falha de rede.',
+    });
+  });
+
   it('lança erro tipado quando a resposta não contém exatamente cinco datas', async () => {
     vi.stubGlobal(
       'fetch',
@@ -298,12 +318,13 @@ describe('getWeather', () => {
         new Response(
           JSON.stringify({
             timezone: 'America/Sao_Paulo',
-            current: { temperature_2m: null, weather_code: 3 },
+            current: { temperature_2m: 18, weather_code: 3, precipitation: null },
             daily: {
               time: forecastDates,
               weather_code: [3, 2, 61, 3, 0],
               temperature_2m_min: [17, 18, 16, 17, 19],
               temperature_2m_max: [24, 26, 22, 23, 27],
+              precipitation_probability_max: [10, null, 75, 15, 0],
             },
           }),
         ),
@@ -312,12 +333,79 @@ describe('getWeather', () => {
 
     const weather = await getWeather(sampleCity);
 
-    expect(weather.current.temperatureC).toBeNull();
-    expect(weather.current.status).toBe('unavailable');
+    expect(weather.current.precipitationMm).toBeNull();
+    expect(weather.current.status).toBe('available');
     expect(weather.forecast).toHaveLength(5);
-    expect(weather.forecast[0]).toMatchObject({
+    expect(weather.forecast[1]).toMatchObject({
       precipitationProbability: null,
       status: 'complete',
     });
+  });
+
+  it.each([
+    'temperature_2m',
+    'weather_code',
+  ] as const)('marca clima atual unavailable quando falta %s sem descartar a previsão', async (missingField) => {
+    const current: Record<string, unknown> = {
+      temperature_2m: 18,
+      weather_code: 3,
+      relative_humidity_2m: 68,
+      wind_speed_10m: 12,
+      precipitation: 0,
+      surface_pressure: 1012,
+    };
+    current[missingField] = null;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            timezone: 'America/Sao_Paulo',
+            current,
+            daily: {
+              time: forecastDates,
+              weather_code: [3, 2, 61, 3, 0],
+              temperature_2m_min: [17, 18, 16, 17, 19],
+              temperature_2m_max: [24, 26, 22, 23, 27],
+              precipitation_probability_max: [10, 20, 75, 15, 0],
+            },
+          }),
+        ),
+      ),
+    );
+
+    const weather = await getWeather(sampleCity);
+
+    expect(weather.current.status).toBe('unavailable');
+    expect(weather.forecast).toHaveLength(5);
+    expect(weather.forecast.every((day) => day.status === 'complete')).toBe(true);
+  });
+
+  it('marca indisponível somente o dia com mínima obrigatória ausente', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            timezone: 'America/Sao_Paulo',
+            current: { temperature_2m: 18, weather_code: 3 },
+            daily: {
+              time: forecastDates,
+              weather_code: [3, 2, 61, 3, 0],
+              temperature_2m_min: [17, null, 16, 17, 19],
+              temperature_2m_max: [24, 26, 22, 23, 27],
+              precipitation_probability_max: [10, 20, 75, 15, 0],
+            },
+          }),
+        ),
+      ),
+    );
+
+    const weather = await getWeather(sampleCity);
+
+    expect(weather.forecast).toHaveLength(5);
+    expect(weather.forecast[0]?.status).toBe('complete');
+    expect(weather.forecast[1]).toMatchObject({ minC: null, status: 'unavailable' });
+    expect(weather.forecast[2]?.status).toBe('complete');
   });
 });

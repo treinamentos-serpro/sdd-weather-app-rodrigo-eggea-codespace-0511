@@ -20,7 +20,6 @@ function formatMetric(value: number | null, unit: string): string {
 export default function CurrentWeather({ city, current, unit }: CurrentWeatherProps) {
   const weather = getWeatherPresentation(current.weatherCode);
   const temperature = formatTemperature(current.temperatureC, unit);
-  const temperatureUnit = unit === 'celsius' ? '°C' : '°F';
   const location = [city.region, city.country].filter(Boolean).join(', ');
 
   const metrics = [
@@ -51,11 +50,6 @@ export default function CurrentWeather({ city, current, unit }: CurrentWeatherPr
           <div>
             <p className="text-6xl font-semibold leading-none tabular-nums sm:text-7xl">
               {temperature}
-              {current.temperatureC !== null && (
-                <span className="ml-1 align-top text-2xl font-medium text-white/70 sm:text-3xl">
-                  {temperatureUnit}
-                </span>
-              )}
             </p>
             <p className="mt-2 text-base text-white/80">{weather.description}</p>
           </div>

@@ -32,18 +32,12 @@ export default function ForecastCard({ day, timeZone, unit }: ForecastCardProps)
           <dt className="text-xs text-white/55">Máx.</dt>
           <dd className="mt-1 whitespace-nowrap text-lg font-semibold tabular-nums">
             {formatTemperature(day.maxC, unit)}
-            {day.maxC !== null && (
-              <span className="ml-1 text-xs text-white/60">{unit === 'celsius' ? '°C' : '°F'}</span>
-            )}
           </dd>
         </div>
         <div>
           <dt className="text-xs text-white/55">Mín.</dt>
           <dd className="mt-1 whitespace-nowrap text-lg font-semibold tabular-nums">
             {formatTemperature(day.minC, unit)}
-            {day.minC !== null && (
-              <span className="ml-1 text-xs text-white/60">{unit === 'celsius' ? '°C' : '°F'}</span>
-            )}
           </dd>
         </div>
       </dl>
