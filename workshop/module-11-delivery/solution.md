@@ -5,15 +5,12 @@ A automação de deploy já está pronta no repositório.
 ## Como funciona
 
 O workflow [`.github/workflows/pages.yml`](../../.github/workflows/pages.yml)
-dispara em push para `main`:
+dispara após a validação do SDD ou manualmente:
 
-1. **Build do app** com `VITE_BASE=/${{ github.event.repository.name }}/app/` —
-   garante que os assets apontem para o subcaminho correto do Pages.
-2. **Montagem do `_site`:**
-   - `docs/*` → raiz (site do workshop),
-   - `dist/*` → `/app/` (app buildado),
-   - `workshop/*` → `/workshop/` (markdown que o site renderiza).
-3. **Publicação** via `actions/upload-pages-artifact` + `actions/deploy-pages`.
+1. **Build do app** com `VITE_BASE=/${{ github.event.repository.name }}/` —
+   garante que os assets apontem para o subcaminho do repositório no Pages.
+2. **Publicação** do diretório `dist` via `actions/upload-pages-artifact` +
+   `actions/deploy-pages`.
 
 ## O `base` configurável
 
@@ -24,14 +21,15 @@ base: process.env.VITE_BASE ?? '/',
 ```
 
 - **Local/dev:** `base = '/'`.
-- **Pages:** `base = '/<repo>/app/'` (injetado pelo workflow).
+- **Pages:** `base = '/<repo>/'` (injetado pelo workflow).
 
-Sem isso, os assets seriam buscados na raiz do domínio e dariam 404.
+Sem isso, os assets seriam buscados na raiz do domínio em vez do subcaminho do
+repositório e dariam 404, deixando o app em branco.
 
 ## Validação local
 
 ```bash
-VITE_BASE=/sdd-weather-app/app/ pnpm build
+VITE_BASE=/sdd-weather-app/ pnpm build
 pnpm preview
 ```
 
@@ -42,8 +40,7 @@ pnpm preview
 
 ## URLs finais
 
-- Workshop: `https://<user>.github.io/<repo>/`
-- App: `https://<user>.github.io/<repo>/app/`
+- App: `https://<user>.github.io/<repo>/`
 
 Ciclo SDD completo: **Brief → Spec → Plan → Tasks → Code → Test → Review →
 Ship**. O Weather App está no ar.
