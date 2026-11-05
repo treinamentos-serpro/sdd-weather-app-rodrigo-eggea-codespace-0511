@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 
 interface SearchBarProps {
   onSearch: (city: string) => void;
@@ -6,6 +6,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ onSearch, disabled }: SearchBarProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
 
@@ -16,6 +17,7 @@ export default function SearchBar({ onSearch, disabled }: SearchBarProps) {
     const city = query.trim();
     if (!city) {
       setValidationMessage('Informe o nome de uma cidade.');
+      inputRef.current?.focus();
       return;
     }
 
@@ -40,6 +42,7 @@ export default function SearchBar({ onSearch, disabled }: SearchBarProps) {
           Buscar cidade
         </label>
         <input
+          ref={inputRef}
           id="city-search"
           type="search"
           value={query}
@@ -54,7 +57,7 @@ export default function SearchBar({ onSearch, disabled }: SearchBarProps) {
         <button
           type="submit"
           disabled={disabled}
-          className="shrink-0 rounded-md bg-accent-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-2 focus-visible:ring-offset-night-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 rounded-md bg-accent-400 px-4 py-2 text-sm font-semibold text-night-900 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-2 focus-visible:ring-offset-night-900 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Buscar
         </button>

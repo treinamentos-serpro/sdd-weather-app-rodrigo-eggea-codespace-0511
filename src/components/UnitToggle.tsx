@@ -42,7 +42,7 @@ export default function UnitToggle({ unit, onChange }: UnitToggleProps) {
         onKeyDown={(event) => handleKeyDown(event, 'celsius')}
         className={`${buttonClassName} ${
           unit === 'celsius'
-            ? 'bg-accent-500 text-white shadow-glass'
+            ? 'bg-accent-400 text-night-900 shadow-glass'
             : 'text-white/70 hover:bg-white/10 hover:text-white'
         }`}
       >
@@ -57,7 +57,7 @@ export default function UnitToggle({ unit, onChange }: UnitToggleProps) {
         onKeyDown={(event) => handleKeyDown(event, 'fahrenheit')}
         className={`${buttonClassName} ${
           unit === 'fahrenheit'
-            ? 'bg-accent-500 text-white shadow-glass'
+            ? 'bg-accent-400 text-night-900 shadow-glass'
             : 'text-white/70 hover:bg-white/10 hover:text-white'
         }`}
       >

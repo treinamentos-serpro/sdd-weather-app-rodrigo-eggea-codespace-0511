@@ -6,7 +6,7 @@ export default function LoadingState() {
     >
       <span
         aria-hidden="true"
-        className="size-4 animate-spin rounded-full border-2 border-white/25 border-t-accent-400"
+        className="size-4 animate-spin rounded-full border-2 border-white/25 border-t-accent-400 motion-reduce:animate-none"
       />
       <span>Carregando previsão do tempo...</span>
     </div>

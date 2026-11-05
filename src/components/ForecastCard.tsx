@@ -20,10 +20,7 @@ export default function ForecastCard({ day, timeZone, unit }: ForecastCardProps)
   const weather = getWeatherPresentation(day.weatherCode);
 
   return (
-    <article
-      aria-label={`${label}: ${weather.description}`}
-      className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-4 text-white backdrop-blur-md"
-    >
+    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-4 text-white backdrop-blur-md">
       <h3 className="truncate text-sm font-semibold text-white/80">{label}</h3>
       <div className="mt-4 flex min-h-14 items-center justify-center" aria-hidden="true">
         <span className="text-4xl">{weather.icon}</span>
