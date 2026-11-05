@@ -6,43 +6,12 @@ import EmptyState from './components/states/EmptyState';
 import ErrorState from './components/states/ErrorState';
 import LoadingState from './components/states/LoadingState';
 import UnitToggle from './components/UnitToggle';
-import { mockWeatherData } from './mocks/weatherData';
-import type { Unit, WeatherData, WeatherStatus } from './types/weather';
+import { useWeather } from './hooks/useWeather';
+import type { Unit } from './types/weather';
 
 export default function App() {
-  const [status, setStatus] = useState<WeatherStatus>('idle');
+  const { status, data, error, query, search, retry } = useWeather();
   const [unit, setUnit] = useState<Unit>('celsius');
-  const [query, setQuery] = useState('');
-  const [data, setData] = useState<WeatherData | null>(null);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  async function handleSearch(city: string) {
-    const trimmedCity = city.trim();
-    if (!trimmedCity) return;
-
-    setQuery(trimmedCity);
-    setData(null);
-    setErrorMessage('');
-    setStatus('loading');
-
-    try {
-      await Promise.resolve();
-      const matchesMock =
-        trimmedCity.toLocaleLowerCase('pt-BR') ===
-        mockWeatherData.city.name.toLocaleLowerCase('pt-BR');
-
-      if (!matchesMock) {
-        setStatus('empty');
-        return;
-      }
-
-      setData(mockWeatherData);
-      setStatus('success');
-    } catch {
-      setErrorMessage('Não foi possível carregar o clima. Tente novamente.');
-      setStatus('error');
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-night-900 via-night-800 to-night-900 text-white">
@@ -55,7 +24,7 @@ export default function App() {
             <span className="text-lg font-bold">WeatherView</span>
           </a>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-            <SearchBar onSearch={handleSearch} disabled={status === 'loading'} />
+            <SearchBar onSearch={search} disabled={status === 'loading'} />
             <UnitToggle unit={unit} onChange={setUnit} />
           </div>
         </div>
@@ -65,7 +34,7 @@ export default function App() {
         {status === 'idle' && (
           <EmptyState
             title="Consulte o clima da sua cidade"
-            hint="Busque São Paulo para visualizar a previsão de exemplo."
+            hint="Busque uma cidade para consultar as condições e a previsão do tempo."
           />
         )}
 
@@ -74,12 +43,15 @@ export default function App() {
         {status === 'empty' && (
           <EmptyState
             title={`Nenhuma cidade encontrada para “${query}”`}
-            hint="Tente buscar São Paulo, a cidade disponível neste exemplo local."
+            hint="Verifique a grafia ou tente buscar outra cidade."
           />
         )}
 
-        {status === 'error' && errorMessage && (
-          <ErrorState message={errorMessage} onRetry={() => void handleSearch(query)} />
+        {status === 'error' && (
+          <ErrorState
+            message={error?.userMessage ?? 'Não foi possível carregar o clima. Tente novamente.'}
+            onRetry={() => void retry()}
+          />
         )}
 
         {status === 'success' && data && (
