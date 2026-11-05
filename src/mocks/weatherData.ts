@@ -1,0 +1,65 @@
+import type { WeatherData } from '../types/weather';
+
+export const mockWeatherData: WeatherData = {
+  city: {
+    id: 3448439,
+    name: 'São Paulo',
+    country: 'Brazil',
+    region: 'São Paulo',
+    latitude: -23.5475,
+    longitude: -46.6361,
+  },
+  timezone: 'America/Sao_Paulo',
+  current: {
+    time: '2026-11-05T08:00',
+    temperatureC: 18,
+    weatherCode: 3,
+    humidityPercent: 68,
+    windSpeedKmh: 12,
+    precipitationMm: 0.4,
+    pressureHpa: 1012,
+    status: 'available',
+  },
+  forecast: [
+    {
+      date: '2026-11-05',
+      weatherCode: 3,
+      minC: 17,
+      maxC: 24,
+      precipitationProbability: 10,
+      status: 'complete',
+    },
+    {
+      date: '2026-11-06',
+      weatherCode: 2,
+      minC: 18,
+      maxC: 26,
+      precipitationProbability: 20,
+      status: 'complete',
+    },
+    {
+      date: '2026-11-07',
+      weatherCode: 61,
+      minC: 16,
+      maxC: 22,
+      precipitationProbability: 75,
+      status: 'complete',
+    },
+    {
+      date: '2026-11-08',
+      weatherCode: 3,
+      minC: 17,
+      maxC: 23,
+      precipitationProbability: 15,
+      status: 'complete',
+    },
+    {
+      date: '2026-11-09',
+      weatherCode: 0,
+      minC: 19,
+      maxC: 27,
+      precipitationProbability: 0,
+      status: 'complete',
+    },
+  ],
+};
