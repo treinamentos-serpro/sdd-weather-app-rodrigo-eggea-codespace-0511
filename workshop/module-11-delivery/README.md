@@ -29,6 +29,5 @@ o `base` do Vite muda em produção.
 ## Saída
 
 - GitHub Pages habilitado (Source: GitHub Actions)
-- Site do workshop publicado na raiz
-- App publicado em `/<repo>/app/`
+- App publicado em `/<repo>/`
 - URL pública funcionando
